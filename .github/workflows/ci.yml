@@ -23,8 +23,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cabal/store
-            ~/.cabal/packages
+            /home/runner/.cabal/store
+            /home/runner/.cabal/packages
             dist-newstyle
           key: cabal-deps-${{ runner.os }}-${{ hashFiles('**/*.cabal', 'cabal.project*') }}
           restore-keys: |
@@ -33,7 +33,7 @@ jobs:
       - name: Cache tools
         uses: actions/cache@v4
         with:
-          path: ~/.cabal/bin
+          path: /home/runner/.cabal/bin
           key: cabal-tools-${{ runner.os }}-ormolu-hlint
           restore-keys: |
             cabal-tools-${{ runner.os }}-
@@ -48,14 +48,14 @@ jobs:
 
       - name: Install linters
         run: |
-          cabal install --installdir=$HOME/.cabal/bin --overwrite-policy=always ormolu hlint
+          cabal install --installdir=/home/runner/.cabal/bin --overwrite-policy=always ormolu hlint
 
       - name: Ormolu check
         run: |
-          export PATH=$HOME/.cabal/bin:$PATH
+          export PATH=/home/runner/.cabal/bin:$PATH
           find app src test -name '*.hs' -print0 | xargs -0 ormolu --mode check
 
       - name: HLint
         run: |
-          export PATH=$HOME/.cabal/bin:$PATH
+          export PATH=/home/runner/.cabal/bin:$PATH
           hlint app src test
