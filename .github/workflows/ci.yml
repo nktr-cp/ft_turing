@@ -9,9 +9,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # HOME が runner や act で変化しないように固定
+      - name: Normalize cabal home to workspace
+        run: |
+          mkdir -p .cabal
+          rm -rf $HOME/.cabal
+          ln -s $GITHUB_WORKSPACE/.cabal $HOME/.cabal
 
       - name: Setup Haskell
         uses: haskell-actions/setup@v2
@@ -23,18 +31,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            /home/runner/.cabal/store
-            /home/runner/.cabal/packages
+            .cabal/store
+            .cabal/packages
             dist-newstyle
-          key: cabal-deps-${{ runner.os }}-${{ hashFiles('**/*.cabal', 'cabal.project*') }}
+          key: cabal-deps-${{ runner.os }}-${{ hashFiles('**/*.cabal', 'cabal.project*') }}-v2
           restore-keys: |
             cabal-deps-${{ runner.os }}-
 
       - name: Cache tools
         uses: actions/cache@v4
         with:
-          path: /home/runner/.cabal/bin
-          key: cabal-tools-${{ runner.os }}-ormolu-hlint
+          path: .cabal/bin
+          key: cabal-tools-${{ runner.os }}-ormolu-hlint-v2
           restore-keys: |
             cabal-tools-${{ runner.os }}-
 
@@ -48,14 +56,14 @@ jobs:
 
       - name: Install linters
         run: |
-          cabal install --installdir=/home/runner/.cabal/bin --overwrite-policy=always ormolu hlint
+          cabal install --installdir=.cabal/bin --overwrite-policy=always ormolu hlint
 
       - name: Ormolu check
         run: |
-          export PATH=/home/runner/.cabal/bin:$PATH
+          export PATH=$GITHUB_WORKSPACE/.cabal/bin:$PATH
           find app src test -name '*.hs' -print0 | xargs -0 ormolu --mode check
 
       - name: HLint
         run: |
-          export PATH=/home/runner/.cabal/bin:$PATH
+          export PATH=$GITHUB_WORKSPACE/.cabal/bin:$PATH
           hlint app src test
