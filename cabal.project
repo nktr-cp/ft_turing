@@ -1,0 +1,4 @@
+packages: .
+
+package ft-turing
+  ghc-options: -Wall

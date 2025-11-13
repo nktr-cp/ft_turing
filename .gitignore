@@ -1,0 +1,10 @@
+/dist-newstyle/
+/.stack-work/
+/.ghc.environment.*
+/.vscode/
+/.idea/
+/.DS_Store
+*.hi
+*.o
+*.log
+subject.md
