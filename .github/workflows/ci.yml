@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,26 +19,43 @@ jobs:
           ghc-version: '9.4.8'
           cabal-version: '3.10.1.0'
 
-      - name: Cache cabal store
+      - name: Cache cabal dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.cabal/store
-          key: cabal-store-${{ runner.os }}-${{ hashFiles('cabal.project', 'ft-turing.cabal') }}
+          path: |
+            ~/.cabal/store
+            ~/.cabal/packages
+            dist-newstyle
+          key: cabal-deps-${{ runner.os }}-${{ hashFiles('**/*.cabal', 'cabal.project*') }}
+          restore-keys: |
+            cabal-deps-${{ runner.os }}-
 
-      - name: Install tooling
+      - name: Cache tools
+        uses: actions/cache@v4
+        with:
+          path: ~/.cabal/bin
+          key: cabal-tools-${{ runner.os }}-ormolu-hlint
+          restore-keys: |
+            cabal-tools-${{ runner.os }}-
+
+      - name: Update and build
         run: |
           cabal update
-          cabal install --installdir=$HOME/.cabal/bin --overwrite-policy=always ormolu hlint
-
-      - name: Build
-        run: cabal build all
+          cabal build all
 
       - name: Test
         run: cabal test all
 
+      - name: Install linters
+        run: |
+          cabal install --installdir=$HOME/.cabal/bin --overwrite-policy=always ormolu hlint
+
       - name: Ormolu check
         run: |
+          export PATH=$HOME/.cabal/bin:$PATH
           find app src test -name '*.hs' -print0 | xargs -0 ormolu --mode check
 
       - name: HLint
-        run: hlint app src test
+        run: |
+          export PATH=$HOME/.cabal/bin:$PATH
+          hlint app src test
