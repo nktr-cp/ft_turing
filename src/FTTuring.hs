@@ -1,6 +1,7 @@
 module FTTuring
   ( versionString,
-  ) where
+  )
+where
 
 import Data.Text (Text)
 import qualified Data.Text as T

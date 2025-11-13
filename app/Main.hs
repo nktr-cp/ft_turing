@@ -2,8 +2,8 @@
 
 module Main (main) where
 
-import FTTuring (versionString)
 import qualified Data.Text.IO as T
+import FTTuring (versionString)
 
 main :: IO ()
 main = do
