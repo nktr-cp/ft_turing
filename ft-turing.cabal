@@ -1,0 +1,45 @@
+cabal-version:      3.8
+name:               ft-turing
+version:            0.1.0.0
+synopsis:           Haskell Turing Machine emulator scaffolding
+category:           Emulator
+license:            MIT
+license-file:       LICENSE
+author:             ft_turing authors
+maintainer:         dev@ft-turing.example
+build-type:         Simple
+
+common warnings
+  default-language: Haskell2010
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+    -Widentities -Wunused-packages
+
+library
+  import: warnings
+  hs-source-dirs: src
+  exposed-modules:
+      FTTuring
+  build-depends:
+      base >=4.16 && <4.22
+    , text >=1.2 && <2.3
+
+executable ft-turing
+  import: warnings
+  hs-source-dirs: app
+  main-is: Main.hs
+  build-depends:
+      base >=4.16 && <4.22
+    , text >=1.2 && <2.3
+    , ft-turing
+
+test-suite ft-turing-test
+  import: warnings
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Spec.hs
+  build-depends:
+      base >=4.16 && <4.22
+    , ft-turing
+    , tasty >=1.4 && <1.6
+    , tasty-hunit >=0.10 && <0.12
