@@ -20,8 +20,10 @@ library
   hs-source-dirs: src
   exposed-modules:
       FTTuring
+      Parser
   build-depends:
       base >=4.16 && <4.22
+    , containers >=0.6 && <0.8
     , text >=1.2 && <2.3
 
 executable ft-turing
